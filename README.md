@@ -22,8 +22,7 @@ The "default" db is the postgresql database *esamiAnatomia_development*, that co
 
 The source code to connect the database is so simple as: 
 ```ruby
-ActiveRecord::Base.establish_connection(ENV['ESAMIANATOMIA_DB_URL'] || \
-  'postgres://db_username:db_password@localhost/esamiAnatomia_development')
+ActiveRecord::Base.establish_connection(ENV['ESAMIANATOMIA_DB_URL'] || 'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/esamiAnatomia_development')
 
 class Exam < ActiveRecord::Base
 end
@@ -61,7 +60,8 @@ In that case, the Model is a class where I specify also some activerecord valida
 ```ruby
 class Note < ActiveRecord::Base
   # connessione a specifico db  
-  establish_connection(ENV['SAR_DB_URL'] || 'postgres://db_username:db_password@localhost/sar')
+  establish_connection(ENV['SAR_DB_URL'] || 'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/sar')
+
 
   # set del nome di una tabella, nel caso in cui non sia fatta con convenzione Rails 
   self.table_name = "notes"
@@ -363,7 +363,7 @@ $ curl localhost:9393/download/file.txt
 ## Web Client side API calls using jQuery AJAX 
 
 Some examples available in [/public/webclient.html] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) web demo page. 
-
+Here a: [Screenshot] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png). 
 
 ---
 ## How to run sinatra server
