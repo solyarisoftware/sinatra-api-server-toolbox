@@ -1,40 +1,48 @@
-# API server demo 
+# Sinatra API server demo 
 
 The purpose of the application is to realize an simple API server demo using sinatra, returning data in JSON format (pretty pronted for developement environment, and "minified" for production environment).
 
-I access some tables from two different postgresql databases, that already exist, and I want to acces them using activerecord ORM.
+I access some tables from two different postgresql databases, that already exist, and I want to acces them using activerecord ORM, so
+I used https://github.com/janko-m/sinatra-activerecord, gem that allow to interact with DBs through activerecord.
+
+To automatically reload rack development server I enjoyed shotgun: https://github.com/rtomayko/shotgun
+
+To browse activerecord models and doying queries, as I'm used with *rails console*, I used very useful `tux` environment: https://github.com/cldwalker/tux
 
 
-To reload rack development server I enjoyed shotgun: https://github.com/rtomayko/shotgun
+# Accessing DBs through Activerecord
 
-To browse activerecord models and doying queries, as we are used with `rails console`, I used beautiful tux: https://github.com/cldwalker/tux
-
-
-# Accessing databases through Sinatra-Activerecord
-
-I used `sinatra-activerecord`, an excellent gem that allow to interact with DBs, using activerecord ORM.
 
 In this sample application, I want connect with two already existent databases:
 
-The "default" db is the postgresql database *esamiAnatomia_development*, that contain three tables: *Exam*, *User*, *Course*:
+The "default" db is the postgresql database *esamiAnatomia_development*, that contain three tables: 
+- *Exam* 
+- *User* 
+- *Course*
 
+The source code to connect the database is so simple as: 
 ```ruby
-ActiveRecord::Base.establish_connection(ENV['ESAMIANATOMIA_DB_URL'] || 'postgres://db_username:db_password@localhost/esamiAnatomia_development')
-
+ActiveRecord::Base.establish_connection(ENV['ESAMIANATOMIA_DB_URL'] || \
+  'postgres://db_username:db_password@localhost/esamiAnatomia_development')
 
 class Exam < ActiveRecord::Base
 end
-
 class User < ActiveRecord::Base
 end
-
 class Course < ActiveRecord::Base
 end
 ```
 
-I want to connect also to a second (postgresql) database named *sar*, containing table: *Note*:
+I want to connect also to a second different postgresql database named *sar*, containing table: 
+- *Note*
+
+Here below the table columns details: 
 
 ```
+$ sudo -u db_username psql sar
+psql (9.1.9)
+Type "help" for help.
+
 sar=# \d notes
                                      Table "public.notes"
    Column   |            Type             |                     Modifiers
@@ -48,7 +56,7 @@ Indexes:
     "notes_pkey" PRIMARY KEY, btree (id)
 ```
 
-in this latter case, the Model is a class where I specify some activerecord validations: 
+In that case, the Model is a class where I specify also some activerecord validations: 
 
 ```ruby
 class Note < ActiveRecord::Base
@@ -64,10 +72,28 @@ class Note < ActiveRecord::Base
 end 
 ```
 
+# Install and run
+
+- git clone the source code from github
+- install all gems specified in Gemfile, with command: 
+    ```$ bundle```
+
+- Run the API server in a first terminal
+  - set environment variables defining DB URI:
+   
+    ```
+    $ export ESAMIANATOMIA_DB_URL=postgres://your-username:your-password@localhost/esamiAnatomia_development
+    $ export SAR_DB_URL=postgres://your-username:your-password@localhost/sar
+    ```
+
+  - run the API SERVER daemon, by example in development env, with command: 
+    ```shotgun -o localhost```
+- Run the API CLIENT calls, using `curl` in a second terminal (below some examples)
+- you can monitor/debug activerecord queries running `tux` in a third terminal   
 
 # Client side API call examples
 
-Here below I listed some examples of usage of API calls, using curl 
+Here below I listed some examples of usage of client-side API calls, using `curl` command line utility. 
 
 ## Simplest call
 
@@ -105,12 +131,14 @@ json reply:
 ```
 
 
-## Api-key (authorization token) parameter in request header
+## Authorization token parameter in request header
+
+The example here below show how to manage an Api-key (authorization token).
 
 List of all items of model *users*, passing an _invalid_ key (an UUID by example) 
 
 ```
-$ curl -X GET http://localhost:9393/users -H "key: c39547b2-dfcc-4c24-a867-55f26e1ca771"
+$ curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 json reply:
 
@@ -124,7 +152,7 @@ json reply:
 List of all items of model *users*, passing a _valid_ key (an UUID by example) 
 
 ```
-$ curl -X GET http://localhost:9393/users -H "key: c39547b2-dfcc-4c24-a867-55f26e1ca772"
+$ curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
 ```
 json reply:
 
@@ -134,7 +162,7 @@ json reply:
     "user": {
       "created_at": "2013-08-27T07:44:48+02:00",
       "crypted_password": ..., 
-      "login": "Franco Fais",
+      "login": "Franco Paperone",
       "role": "docente",
       ...
       "updated_at": "2013-08-27T07:44:48+02:00"
@@ -153,7 +181,7 @@ json reply:
 ]
 ```
 
-## REST db operations for CRUD (Create,  Read, Update, Delete) 
+## DB RESTful CRUD (Create,  Read, Update, Delete) 
 
 ### CREATE of a new record in table *note*:
 
@@ -273,8 +301,6 @@ json reply:
 ]
 ```
 
-# More examples
-
 ## Pagination
 
 get first page (0), assuming a page contain 10 items, from model *Exam*
@@ -320,15 +346,24 @@ json reply:
 ]
 ```
 
-## File upload
+## File Upload / Download
 
-upload file *app.rb* 
+Upload file *file.txt* and store the file in /public directory.
 
 ```
-curl --upload-file app.rb localhost:9393/upload/
+$ curl --upload-file file.txt localhost:9393/upload/
 ```
 
-the file will be uploaded in the */public* folder.
+Download file *file.txt* stored in /public directory (/public/file.txt).
+
+```
+$ curl localhost:9393/download/file.txt
+```
+
+## Web Client side API calls using jQuery AJAX 
+
+Some examples available in [/public/webclient.html] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) web demo page. 
+
 
 ---
 ## How to run sinatra server
@@ -366,14 +401,14 @@ $ rackup -o localhost -p 9393 -E production
 ```
 ---
 
-## tux as a sinatra *console* 
+## *tux* as an equivalent of *rails console* 
 
 `tux gem`
-act as "rails console" for a Sinatra application!
-Really useful to query database using activerecord methods
+act as *rails console* for a Sinatra application!
+Really useful to query database using activerecord methods.
 
 `hirb gem` 
-allow to show data table in pretty print.
+allow to show (activerecord returned) record data set in pretty print data tables.
 
 Here below some examples using tux interactive console
 
@@ -462,5 +497,9 @@ true
 # Todo
 
 - better manage HTTP return codes
-- exceptions handling lack
+- better manage error handling
+- exceptions handling lack at all.
 
+# Contact
+
+e-mail: giorgio.robino@gmail.com

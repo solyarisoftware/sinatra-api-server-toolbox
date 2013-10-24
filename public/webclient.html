@@ -1,0 +1,113 @@
+<html>
+  <head>
+    <!-- download form http://code.jquery.com/ (jQuery CDN – Latest Stable Versions) -->
+    <script src="jquery-2.0.3.min.js"></script>
+    <style type="text/css">
+    body {
+      margin:40px;
+    }
+    pre {
+      background: none repeat scroll 0 0 #EEEEEE;
+      border: 1px solid #CCCCCC;
+      padding: 5px;
+      }
+    </style>
+  </head>
+
+<body>
+<h1>Web AJAX API Client Demo: some examples</h1>  
+
+<h2>GET /</h2> 
+<pre id="source_root">
+
+$('#root').click(function () {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    url: url + "/",
+    success: 
+      function (data) { $('#reply_root').html( JSON.stringify(data, null, 4)); }
+  });
+});
+  
+<button id="root">run</button>
+</pre>
+JSON reply:
+<pre id="reply_root">
+  
+</pre>
+
+<h2>GET /notes</h2> 
+<pre>
+
+$('#notes').click(function () {
+  $.getJSON( url + "/notes", 
+    function (data) { $('#reply_notes').html( JSON.stringify(data, null, 4) ); }); 
+});        
+
+<button id="notes">run</button>
+</pre>
+
+JSON reply:
+<pre id="reply_notes">
+&lt;pre id="reply_notes"&gt;&lt;/pre&gt;    
+</pre>
+
+
+<h2>POST /notes</h2> 
+<pre>
+
+$('#notes_post').click(function () {
+  $.ajax({
+    type: "POST",
+    data: JSON.stringify({ title:"nota bla", body: "blablablabla blablablabla" }),
+    dataType: "json",
+    context: document.body,
+    url: url + "/notes",
+    success: 
+      function (data) { $('#reply_notes_post').html( JSON.stringify(data, null, 4)); }
+  });
+});        
+
+<button id="notes_post">run</button>
+</pre>
+
+JSON reply:
+<pre id="reply_notes_post">
+
+</pre>
+
+<script type="text/javascript">
+
+var url = "http://" + $(location).attr('hostname') + ":" + $(location).attr('port') 
+      
+$('#root').click(function () {
+  $.ajax({
+    type: "GET",
+    dataType: "json",
+    url: url + "/",
+    success: 
+      function (data) { $('#reply_root').html( JSON.stringify(data, null, 4)); }
+  });
+});
+      
+$('#notes').click(function () {
+  $.getJSON( url + "/notes", 
+    function (data) { $('#reply_notes').html( JSON.stringify(data, null, 4) ); }); 
+});        
+
+$('#notes_post').click(function () {
+  $.ajax({
+    type: "POST",
+    data: JSON.stringify({ title:"nota bla", body: "blablablabla blablablabla" }),
+    dataType: "json",
+    context: document.body,
+    url: url + "/notes",
+    success: 
+      function (data) { $('#reply_notes_post').html( JSON.stringify(data, null, 4)); }
+  });
+});
+
+</script>
+</body>
+</html>
