@@ -1,13 +1,13 @@
 # Sinatra API server demo 
 
-The purpose of the application is to realize an simple API server demo using sinatra, returning data in JSON format (pretty pronted for developement environment, and "minified" for production environment).
+Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), returning data in JSON format (pretty printed for developement environment, and "minified" for production environment).
 
 I access some tables from two different postgresql databases, that already exist, and I want to acces them using activerecord ORM, so
-I used https://github.com/janko-m/sinatra-activerecord, gem that allow to interact with DBs through activerecord.
+I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord.
 
-To automatically reload rack development server I enjoyed shotgun: https://github.com/rtomayko/shotgun
+To automatically reload rack development server I enjoyed [`shotgun`](https://github.com/rtomayko/shotgun)
 
-To browse activerecord models and doying queries, as I'm used with *rails console*, I used very useful `tux` environment: https://github.com/cldwalker/tux
+To browse activerecord models and doying queries, as I'm used with *rails console*, I used very useful [`tux`](https://github.com/cldwalker/tux) developement environment.
 
 
 # Accessing DBs through Activerecord
@@ -362,10 +362,30 @@ $ curl localhost:9393/download/file.txt
 
 ## Web Client side API calls using jQuery AJAX 
 
-Some examples available in [/public/webclient.html] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) web demo page. 
-Here a: [Screenshot] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png). 
+ 
+I wrote a web demo page: [/public/webclient.html] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) 
+The page allow to test some examples of API methods usage, using jQuery AJAX calls like this one: 
 
----
+```javascript
+$('#notes_post').click(function () {
+  $.ajax({
+    type: "POST",
+    data: JSON.stringify({ title:"nota bla", body: "blablablabla blablablabla" }),
+    dataType: "json",
+    context: document.body,
+    url: url + "/notes",
+    success:
+      function (data) { $('#reply_notes_post').html( JSON.stringify(data, null, 4)); }
+  });
+});
+
+```
+
+here a screenshot of the "runned" webclient page: ![screenshot][screenshot]
+[screenshot]: https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png
+
+------
+
 ## How to run sinatra server
 
 
