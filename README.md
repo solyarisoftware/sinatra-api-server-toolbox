@@ -22,7 +22,8 @@ The "default" db is the postgresql database *esamiAnatomia_development*, that co
 
 The source code to connect the database is so simple as: 
 ```ruby
-ActiveRecord::Base.establish_connection(ENV['ESAMIANATOMIA_DB_URL'] || 'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/esamiAnatomia_development')
+ActiveRecord::Base.establish_connection(ENV['ESAMIANATOMIA_DB_URL'] || \
+  'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/esamiAnatomia_development')
 
 class Exam < ActiveRecord::Base
 end
@@ -60,8 +61,8 @@ In that case, the Model is a class where I specify also some activerecord valida
 ```ruby
 class Note < ActiveRecord::Base
   # connessione a specifico db  
-  establish_connection(ENV['SAR_DB_URL'] || 'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/sar')
-
+  establish_connection(ENV['SAR_DB_URL'] || \
+    'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/sar')
 
   # set del nome di una tabella, nel caso in cui non sia fatta con convenzione Rails 
   self.table_name = "notes"
@@ -519,6 +520,10 @@ true
 - better manage HTTP return codes
 - better manage error handling
 - exceptions handling lack at all.
+
+# Thanks
+- Iain Barnett ( https://github.com/yb66 ) for his answer to my stackoverflow.com [accessing-preexistent-database-via-activerecord-about-validations] (http://stackoverflow.com/questions/19402318/sinatra-api-server-accessing-preexistent-database-via-activerecord-about-valida/19461374?noredirect=1#19461374)
+
 
 # Contact
 
