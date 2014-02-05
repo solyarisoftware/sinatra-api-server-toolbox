@@ -526,9 +526,9 @@ true
 - Iain Barnett ( https://github.com/yb66 ) for his answer to my stackoverflow.com [accessing-preexistent-database-via-activerecord-about-validations] (http://stackoverflow.com/questions/19402318/sinatra-api-server-accessing-preexistent-database-via-activerecord-about-valida/19461374?noredirect=1#19461374)
 
 
-# The MIT License (MIT)
+License (MIT)
 
-Copyright (c) [2014] [Giorgio Robino]
+Copyright (c) 2014 Giorgio Robino
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -547,6 +547,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 
 # Contact
 
