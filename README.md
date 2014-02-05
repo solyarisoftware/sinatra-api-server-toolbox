@@ -526,7 +526,7 @@ true
 - Iain Barnett ( https://github.com/yb66 ) for his answer to my stackoverflow.com [accessing-preexistent-database-via-activerecord-about-validations] (http://stackoverflow.com/questions/19402318/sinatra-api-server-accessing-preexistent-database-via-activerecord-about-valida/19461374?noredirect=1#19461374)
 
 
-License (MIT)
+# License (MIT)
 
 Copyright (c) 2014 Giorgio Robino
 
