@@ -381,8 +381,7 @@ $('#notes_post').click(function () {
 
 ```
 
-here a screenshot of the "runned" webclient page: ![screenshot][screenshot]
-[screenshot]: https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png
+here a screenshot of the "runned" webclient page: ![screenshot](https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png)
 
 ------
 

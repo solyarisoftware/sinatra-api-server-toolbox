@@ -2,14 +2,14 @@ source 'https://rubygems.org'
 
 gem "sinatra"
 
-# Object Relational Model: activerecord
-gem "sinatra-activerecord"
-gem "activerecord"
-
-# Database: postgresql
+# Database: postgreSQL
 gem "pg"
 
-# http server: thin
+# Object Relational Model: ActiveRecord
+gem "activerecord"
+gem "sinatra-activerecord"
+
+# http server: Thin
 gem 'thin'
 
 group :development do
