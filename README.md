@@ -514,7 +514,16 @@ true
 >>
 ```
 
+# Releases
+
+## v.0.1.1
+- comments translated in English, adding some explanations.
+
 # Todo
+
+- JSON load/dump: to speed-up, substitute JSON Ruby standard implementation, using [MultiJson](https://github.com/intridea/multi_json) gem and above all with superfast [Oj](https://github.com/ohler55/oj); Iused this approach in my project: [blomming_api](https://github.com/solyaris/blomming_api).
+
+- Insert an example of managing large amount of data with [REDIS](http://redis.io/) super-fast in-memory NOSQL database.
 
 - better manage HTTP return codes
 - better manage error handling
