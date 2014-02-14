@@ -4,9 +4,12 @@ Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), ret
 
 I access some tables from two different postgresql databases, that already exist, and I want to acces them using activerecord ORM, so I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord ORM.
 
-To automatically reload rack development server I enjoyed use of [`shotgun`](https://github.com/rtomayko/shotgun)
+Developer Tools:
+- I used [curl](http://curl.haxx.se/docs/httpscripting.html) as default command line tool for doing client-side tests.
+- I coded a simple web client tester [Web Client side API calls using jQuery AJAX](https://github.com/solyaris/sinatra-api-server-demo#web-client-side-api-calls-using-jquery-ajax) 
 
-To browse activerecord models and doying queries, as I'm used with *rails console*, I used very useful [`tux`](https://github.com/cldwalker/tux) developement environment.
+- To automatically reload rack development server I enjoyed use of [shotgun](https://github.com/rtomayko/shotgun)
+- To browse activerecord models and doying queries, as I'm used with *rails console*, I used very useful [tux](https://github.com/cldwalker/tux) developement environment.
 
 
 # Accessing relational DBs through Activerecord
@@ -362,7 +365,6 @@ $ curl localhost:9393/download/file.txt
 
 ## Web Client side API calls using jQuery AJAX 
 
- 
 I wrote a web demo page: [/public/webclient.html] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) 
 The page allow to test some examples of API methods usage, using jQuery AJAX calls like this one: 
 
@@ -381,8 +383,7 @@ $('#notes_post').click(function () {
 
 ```
 
-INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page ! 
-
+INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page:
 ![screenshot](https://raw2.github.com/solyaris/sinatra-api-server-demo/master/public/webclient.html.shot.png)
 
 ------
@@ -518,13 +519,13 @@ true
 # Releases
 
 ## v.0.1.1
-- comments translated in English, adding some explanations.
+- comments translated in English, adding some explanations. Better explanantion in README, inserting screenshot of Web Client side API calls example using jQuery AJAX.
 
 # Todo
 
 - JSON load/dump speed-up: substitute JSON Ruby standard implementation I used, instead using [MultiJson](https://github.com/intridea/multi_json) gem and super-fast [Oj](https://github.com/ohler55/oj) gem. BTW, I used this last approach in my project: [blomming_api](https://github.com/solyaris/blomming_api).
 
-- Insert an example of managing large amount of data with a super-fast in-memory NOSQL database as [REDIS](http://redis.io/) !
+- Insert an example of managing large amount of data with a super-fast in-memory NOSQL database as [Redis](http://redis.io/)!
 
 - better manage HTTP return codes
 - better manage error handling
