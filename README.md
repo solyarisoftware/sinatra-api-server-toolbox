@@ -2,15 +2,14 @@
 
 Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), returning data in JSON format (pretty printed for developement environment, and "minified" for production environment).
 
-I access some tables from two different postgresql databases, that already exist, and I want to acces them using activerecord ORM, so
-I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord.
+I access some tables from two different postgresql databases, that already exist, and I want to acces them using activerecord ORM, so I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord ORM.
 
-To automatically reload rack development server I enjoyed [`shotgun`](https://github.com/rtomayko/shotgun)
+To automatically reload rack development server I enjoyed use of [`shotgun`](https://github.com/rtomayko/shotgun)
 
 To browse activerecord models and doying queries, as I'm used with *rails console*, I used very useful [`tux`](https://github.com/cldwalker/tux) developement environment.
 
 
-# Accessing DBs through Activerecord
+# Accessing relational DBs through Activerecord
 
 
 In this sample application, I want connect with two already existent databases:

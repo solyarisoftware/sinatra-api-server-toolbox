@@ -2,12 +2,17 @@ require 'json'
 require 'sinatra'
 require 'sinatra/activerecord'
 
-# connessione a database postgresql già esistente
-# http://amaras-tech.co.uk/article/111/Sinatra_ActiveRecord_DB_config_on_Heroku
+#
+# connect to already existing postgresql database instance,
+# establishing a connection with a DEFAULT database
+# see also: http://amaras-tech.co.uk/article/111/Sinatra_ActiveRecord_DB_config_on_Heroku
+#
 ActiveRecord::Base.establish_connection(ENV['ESAMIANATOMIA_DB_URL'] || 'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/esamiAnatomia_development')
 
-# dichiarazione delle tabelle a cui accedere 
 
+#
+# declare tables to be used through Activerecord 
+#
 class Exam < ActiveRecord::Base
 end
 
@@ -17,15 +22,18 @@ end
 class Course < ActiveRecord::Base
 end
 
-# caso specifico di Modello (tabella) appartenente a database differente da quello di default!
+#
+# Establish a connection with a Model (a Table) belong to a database different from default 
+# Declare some validations
+#
 class Note < ActiveRecord::Base
-  # connessione a specifico db  
+  # Establish a connection with a Model (a Table) belong to a database different from default 
   establish_connection(ENV['SAR_DB_URL'] || 'postgres://YOURUSERNAME:YOURPASSWORD@HOSTIPADDRESS/sar')
 
-  # set del nome di una tabella, nel caso in cui non sia fatta con convenzione Rails 
+  # set table Name, in case in the existing datbase there is not a 'Rails naming' convention
   self.table_name = "notes"
 
-  # validazioni activerecord 
+  # validations a la Activerecord 
   validates :title, presence: true, length: { minimum: 3 }
   validates :body, presence: true
 end
@@ -55,16 +63,26 @@ end
 
 helpers do
 
-  # elenco api-keys permesse: 
-  # le chiavi sono lette dal file di testo in chiaro... /db/app.keys (just a demo!)
-  # dove ogni linea ha formato {key}blank{comments}, per esempio: 
+  #
+  # List of allowed API-KEYS: 
+  # key are stored and read from a text file ( /db/app.keys ) without any encryption... 
+  # BTW, that's just a demo, but please not if you have a small number of client, 
+  # storing in memory API-KEYS could be super-fast solution!)
+  # TODO: possibly use REDIS database to manage large numbers of keys.
+  #
+  # /db/app.keys file format:  
+  # text file where every line has format {key}blank{comments}, by example: 
   # xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx UUID for user X, X@gmail.com
   # yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy UUID for user Y
   #
   ALLOWED_KEYS = open("#{Sinatra::Application.settings.root}/db/app.keys").map { |line| line.split(' ')[0] }
 
-
-  # in ambiente di sviluppo: pretty print JSON, altrimenti: JSON minimale
+  #
+  # JSON dump: 
+  # in developement environment: pretty print JSON, 
+  # otherwise: minified JSON
+  # TODO: use MultiJson (and Oj under the hood) to speed-up JSON dump/load 
+  #
   def to_json( dataset )
     if !dataset #.empty? 
       return no_data!
@@ -77,12 +95,14 @@ helpers do
     end
   end
 
-  # il parametro "Authorization" in request header (API KEY), deve essere uno UUID censito 
+  #
+  # Authorization parameter in request header ("API KEY"), must be an UUID present in app.keys file 
+  #
   def authorized?
     api_key = request.env["HTTP_KEY"] # "HTTP_AUTHORIZATION" 
     #STDERR.puts request.inspect
     
-    # ritorna dati se la chiamata ha una chiave autorizzata
+    # return data in case of authorized API_KEY
     (ALLOWED_KEYS.include? api_key) ? true : false 
   end
 
@@ -107,38 +127,50 @@ get "/" do
   STDERR.puts "request body:"
   STDERR.puts request.body.read.inspect
 =end
-  to_json ( { :message => "JSON API DEMO (ruby, sinatra, activerecord, postgresql) by: giorgio.robino@gmail.com"} )
+  to_json ( { :message => "JSON API DEMO (ruby, sinatra, ActiveRecord, postgresql) by: giorgio.robino@gmail.com"} )
 end
 
 
-# operazioni CRUD sul modello Note
+#
+# CRUD verbs on Note model
+#
 get "/notes" do
   to_json Note.all
 end
 
+#
 # READ
+#
 get "/notes/:id" do
   to_json Note.find(params[:id])
 end
 
+#
 # CREATE
+#
+# usage example:
 # curl -i -X POST http://localhost:9393/notes -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
+#
 post "/notes" do
 
+  # get parameters form request body in JSON format  
   new_note = JSON.parse(request.body.read)
 
-  # paranetri presi dal request body
   @note = Note.new( new_note ) #params[:note]
   if @note.save
     to_json @note
   else
-    # se ci sono errori (validazioni non superate), ritorna errori
+    # return errors if errors present (validations fail), 
     to_json @note.errors.messages
   end
 end
 
+#
 # UPDATE
+#
+# usage example:
 # curl -i -X PUT http://localhost:9393/notes/9 -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
+#
 put "/notes/:id" do
   @note = Note.find_by_id(params[:id])
  
@@ -155,7 +187,9 @@ put "/notes/:id" do
   end
 end
 
+#
 # DELETE
+#
 delete "/notes/:id" do
     @note = Note.find_by_id(params[:id])
  
@@ -167,23 +201,25 @@ delete "/notes/:id" do
   end
 end
 
-######################
 
 get "/courses" do
   to_json Course.all
 end
 
-# occhio: no è bello con tabella di 10000 righe!
+# WARN: BAD! in case of a table with a lot of rows!
 get "/exams" do
   to_json Exam.all
 end
 
-# gestisce API KEY (meta informazione, ovvero parametro,  nell'HTTP request header)
-# https://httpkit.com/resources/HTTP-from-the-Command-Line/
+#
+# call example with API KEY (meta info, say parameter in HTTP request header)
+# see for fun: https://httpkit.com/resources/HTTP-from-the-Command-Line/
 # 
+# usage example:
 # curl -X GET http://localhost:9393/users -H "key: c39547b2-dfcc-4c24-a867-55f26e1ca772"
+#
 get "/users" do
-  # ritorna dati se la chiamata ha una chiave autorizzata
+  # return data if passed API_KEY is authorized 
   if authorized?
     to_json User.all
   else
@@ -192,11 +228,13 @@ get "/users" do
 end
 
 
-# ritorna tutto, con paginazione 
-# :limit == numero record per pagina, 
+#
+# retrun all data, with pagination 
+# :limit == number of record per page, 
 # :offset ==  (numero pagina -1) * (:limit), 
-# per esempio la terza pagina con 10 record per pagina è: 
+# by example third page with 10 record per page is: 
 # Exam.limit(10).offset(2*10)
+#
 get "/exams/paginate/:limit/:offset" do
   to_json Exam.limit(params[:limit]).offset(params[:offset])
 end
@@ -205,7 +243,7 @@ get "/exams/last_twenty" do
   to_json Exam.select([:id, :cognomenome, :matricola, :updated_at]).order("updated_at DESC").limit(20)
 end
 
-# stessa query sopra, ma immettendo SQL invece che metodi di activerecords...
+# as above, but using plain SQL instead of ActiveRecords ORM DSL...
 get "/exams/last_twenty_by_sql" do
   to_json Exam.find_by_sql('SELECT id, cognomenome, matricola, updated_at FROM exams ORDER BY updated_at DESC LIMIT 20')
  end
@@ -219,7 +257,10 @@ get "/exams-count" do
 end
 
 
-# attenzione all'ordine /exams/... questo metodo va messo nel sorgente, DOPO quelli sopra
+#
+# WARN: keep attention of order of insering  /exams/*  in source code 
+# this endpoint must stay HERE, AFTER all above...
+#
 get "/exams/:id" do
   to_json Exam.find_by_id(params[:id])
 =begin
@@ -232,10 +273,12 @@ get "/exams/:id" do
 end
 
 
-# esempio di post client side, dove i parametri sono passati nel request body: 
+#
+# client side POST example, 
+# where parameters are passed in request body: 
 # curl -X POST http://localhost:9393/login -d '{ "username":"admin", "password":"admin" }'
 # curl -X POST http://localhost:9393/login -d '{ "username":"user", "password":"admin" }' -H 'Content-Type: application/json'
-
+#
 post "/login" do
   # params_json = JSON.parse(request.body.read) # jdata = params[:data]
   login = JSON.parse(request.body.read)
@@ -246,24 +289,31 @@ post "/login" do
     to_json ( { :message => "ERROR: invalid username or password" } )
   end 
 
-  # echo: ritorna stessi parametri della POST...
+  # echo: return same parameters of POST...
   #json @login 
 end
 
 
+#
 # File Upload
+# see also:
 # http://www.convalesco.org/blog/2013/01/10/direct-file-upload-with-sinatra/
 # https://gist.github.com/runemadsen/3905593
-# use curl to upload files to your app
+#
+# use curl to upload files to your app, by example with commanf line:
 # curl --upload-file file.txt http://localhost:9393/upload/
+#
 put '/upload/:filename' do
   File.open("./public/#{params[:filename].to_s}", 'w+') do |file|
     file.write(request.body.read)
   end
 end
 
+#
 # File Download
+# command line example:
 # curl http://localhost/download/file.txt
+#
 get '/download/:filename' do
   file = File.join(settings.public_folder, "#{params[:filename].to_s}")
   if File.exists?(file)
