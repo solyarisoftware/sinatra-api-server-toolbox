@@ -383,7 +383,7 @@ $('#notes_post').click(function () {
 
 INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page ! 
 
-<img src="https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png" alt="screenshot">
+![screenshot](https://raw2.github.com/solyaris/sinatra-api-server-demo/master/public/webclient.html.shot.png)
 
 ------
 
