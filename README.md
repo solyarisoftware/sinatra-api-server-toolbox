@@ -1,4 +1,4 @@
-# Sinatra API server demo 
+# Sinatra API Server Demo 
 
 Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), returning data in JSON format (pretty printed for developement environment, and "minified" for production environment).
 
@@ -381,7 +381,9 @@ $('#notes_post').click(function () {
 
 ```
 
-here a screenshot of the "runned" webclient page: ![screenshot](https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png)
+INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page ! 
+
+<img src="https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html.shot.png" alt="screenshot">
 
 ------
 
@@ -520,9 +522,9 @@ true
 
 # Todo
 
-- JSON load/dump: to speed-up, substitute JSON Ruby standard implementation, using [MultiJson](https://github.com/intridea/multi_json) gem and above all with superfast [Oj](https://github.com/ohler55/oj); Iused this approach in my project: [blomming_api](https://github.com/solyaris/blomming_api).
+- JSON load/dump speed-up: substitute JSON Ruby standard implementation I used, instead using [MultiJson](https://github.com/intridea/multi_json) gem and super-fast [Oj](https://github.com/ohler55/oj) gem. BTW, I used this last approach in my project: [blomming_api](https://github.com/solyaris/blomming_api).
 
-- Insert an example of managing large amount of data with [REDIS](http://redis.io/) super-fast in-memory NOSQL database.
+- Insert an example of managing large amount of data with a super-fast in-memory NOSQL database as [REDIS](http://redis.io/) !
 
 - better manage HTTP return codes
 - better manage error handling
