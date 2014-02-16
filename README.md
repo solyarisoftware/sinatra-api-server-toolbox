@@ -161,17 +161,15 @@ curl localhost:9393/
 
 json 'pretty printed' reply (is sinatra server is running in developement):
 
-```
+```json
 {
   "message": "JSON API DEMO (ruby, sinatra, activerecord, postgresql) by: giorgio.robino@gmail.com"
-}
-```
+}```
 
 json 'minified' reply (is sinatra server is running in production):
 
-```
-{"message":"JSON API DEMO (ruby, sinatra, activerecord, postgresql) by: giorgio.robino@gmail.com"}
-```
+```json
+{"message":"JSON API DEMO (ruby, sinatra, activerecord, postgresql) by: giorgio.robino@gmail.com"}```
 
 
 ## Passing parameters in request body
@@ -455,9 +453,7 @@ run shotgun, basic:
 ```bash
 shotgun -o localhost 
 ```
-```
-== Shotgun/Thin on http://localhost:9393/
-```
+```== Shotgun/Thin on http://localhost:9393/```
 
 
 setting environment excipitly: 
@@ -473,9 +469,7 @@ specifying environment, host and port:
 ```bash
 ruby app.rb -o localhost -p 9393 -e production
 ```
-```
-== Sinatra/1.4.3 has taken the stage on 9393 for production with backup from Thin
-```
+```== Sinatra/1.4.3 has taken the stage on 9393 for production with backup from Thin```
 
 
 using rackup:
