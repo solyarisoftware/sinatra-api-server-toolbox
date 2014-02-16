@@ -36,14 +36,14 @@ As proof of concept I supplied some Sinatra endpoints to manage a pseudo-REST id
    | .---+--------------------------.                             |
    |     |                                                        |
    |     |   .-------------------------------------------------.  |
-   |     +---| PostgreSQL DB 1 (default/base) with tables:     |  |
+   |     +---| postgreSQL DB 1 (default/base) with tables:     |  |
    |     |   |                                                 |  | 
    |     |   | .------. .------. .--------.                    |  | 
    |     |   | | Exam | | User | | Course |                    |  | 
    |     |   | .------. .------. .--------.                    |  | 
    |     |   .-------------------------------------------------.  |
    |     |   .-------------------------------------------------.  |
-   |     +---| PostgreSQL DB 2 (external/remote) with tables:  |  |
+   |     +---| postgreSQL DB 2 (external/remote) with tables:  |  |
    |         |                                                 |  | 
    |         | .------.                                        |  | 
    |         | | Note |                                        |  | 
@@ -59,10 +59,10 @@ Dev Tips:
 
 To reproduce the Rails developer usual experience:  
 -  I enjoyed use of [shotgun](https://github.com/rtomayko/shotgun) to automatically reload rack development server.
-- I used very useful [tux](https://github.com/cldwalker/tux) developement environment to browse ActiveRecord models and doying queries, a la *rails console*.
+- I used very useful [tux](https://github.com/cldwalker/tux) developement environment to browse ActiveRecord models and doying queries, a la *rails console*. Last but not least I find useful [Hirb](https://github.com/cldwalker/hirb) gem, to display record data set in pretty print data tables.
 
 
-# Activerecord ORM
+# Using ActiveRecord ORM
 
 In this sample application, I want connect with two already living databases (let say you already have in production some *legacy* database and you want to access these data with an API server):
 
@@ -84,7 +84,7 @@ class Course < ActiveRecord::Base
 end
 ```
 
-I want to connect also to a second different postgresql database named `sar`, containing table: 
+I want to connect also to a second different postgreSQL database named `sar`, containing table: 
 - `Note`
 
 Here below the table columns details: 
@@ -120,7 +120,7 @@ class Note < ActiveRecord::Base
   # set del nome di una tabella, nel caso in cui non sia fatta con convenzione Rails 
   self.table_name = "notes"
 
-  # validazioni activerecord 
+  # validazioni ActiveRecord 
   validates :title, presence: true, length: { minimum: 3 }
   validates :body, presence: true
 end 
@@ -147,7 +147,7 @@ end
   - run the API SERVER daemon, by example in development env, with command: 
     ```shotgun -o localhost```
 - Run the API CLIENT calls, using `curl` in a second terminal (below some examples)
-- you can monitor/debug activerecord queries running `tux` in a third terminal   
+- you can monitor/debug ActiveRecord queries running `tux` in a third terminal   
 
 # Client side API call examples
 
@@ -163,7 +163,7 @@ json 'pretty printed' reply (is sinatra server is running in developement):
 
 ```json
 {
-  "message": "JSON API DEMO (ruby, sinatra, activerecord, postgresql)"
+  "message": "JSON API DEMO (ruby, sinatra, ActiveRecord, postgreSQL)"
 }
 ```
 
@@ -171,7 +171,7 @@ json 'minified' reply (is sinatra server is running in production):
 
 ```json
 {
-  "message":"JSON API DEMO (ruby, sinatra, activerecord, postgresql)"
+  "message":"JSON API DEMO (ruby, sinatra, ActiveRecord, postgreSQL)"
 }
 ```
 
@@ -246,21 +246,13 @@ json reply:
 ### CREATE of a new record in table *note*:
 
 ```bash
-curl -i -X POST http://localhost:9393/notes \
+curl -X POST http://localhost:9393/notes \
 -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
 ```
 
 json reply:
 
 ```json
-
-HTTP/1.1 200 OK
-Content-Type: application/json;charset=utf-8
-Content-Length: 193
-X-Content-Type-Options: nosniff
-Connection: keep-alive
-Server: thin 1.6.0 codename Greek Yogurt
-
 {
   "note": {
     "body": "corpo del messaggio di prova!",
@@ -272,13 +264,13 @@ Server: thin 1.6.0 codename Greek Yogurt
 }
 ```
 
-### CREATE of a new record in table `note` (in case of validation errors):
+### CREATE of a new record in table *note*:
 
 
 ```
 curl -X POST http://localhost:9393/notes -d '{ "title":"pr", "body":"" }'
 ```
-json reply:
+json reply (in case of validation errors):
 
 ```json
 {
@@ -292,7 +284,7 @@ json reply:
 ```
 
 
-### READ a record from table `note`:
+### READ a record from table *note*:
 
 ```bash
 curl -i http://localhost:9393/notes/1
@@ -310,7 +302,7 @@ json reply:
 }
 ```
 
-### UPDATE a record from table `note`:
+### UPDATE a record from table *note*:
 ```bash
 curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'      
 ```
@@ -329,7 +321,7 @@ json reply:
 
 ```
 
-### DELETE a record from table `note`:
+### DELETE a record from table *note*:
 ```bash
 curl -X DELETE http://localhost:9393/notes/1      
 ```
@@ -487,16 +479,21 @@ rackup -o localhost -p 9393 -E production
 
 `tux gem`
 act as *rails console* for a Sinatra application!
-Really useful to query database using activerecord methods.
+Really useful to query database using ActiveRecord methods.
 
 `hirb gem` 
-allow to show (activerecord returned) record data set in pretty print data tables.
+allow to show (ActiveRecord returned) record data set in pretty print data tables.
 
 Here below some examples using tux interactive console
 
+Run the tux console from command prompt:
 ```bash
 tux
+```
 
+Using tux interactive console with Hirb:
+
+```
 Loading development environment (Rack 1.2)
 
 >> require 'hirb'
