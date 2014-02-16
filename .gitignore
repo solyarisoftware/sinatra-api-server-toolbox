@@ -1,0 +1,5 @@
+# ignore all directories and files in a directory.
+scripts/**/*
+
+public/jquery-2.0.3.min.js
+public/waca.html

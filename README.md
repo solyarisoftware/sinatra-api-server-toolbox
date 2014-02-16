@@ -1,26 +1,75 @@
 # Sinatra API Server Demo 
 
-Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), returning data in JSON format (pretty printed for developement environment, and "minified" for production environment).
+Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), returning data in JSON format.
 
-I access some tables from two different postgresql databases, that already exist, and I want to acces them using activerecord ORM, so I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord ORM.
+Let consider this requirements: 
 
-Developer Tools:
+- To publish some API endpoint to share data already stored in different databases. 
+- To access to some tables from TWO different ALREADY EXISTING (postgreSQL) databases, 
+- To access them using activerecord ORM, so I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord ORM.
+
+As proof of concept I supplied some Sinatra endpoints to manage a pseudo-REST idiom, a very-very simple authorization key example, some data query and routing, files upload/download. Always returning JSON. 
+
+
+```
+   .----------------------------------.
+   |                                  |
+   | API Client (curl/webclient/etc.) |
+   |                                  |
+   .----------------------------------.                             
+         |      ^
+         |      |      
+         |      2: JSON data
+         1: HTTP requests
+         |      |                                       API SERVER
+   .--------------------------------------------------------------.      
+   |     |      |                                                 |  
+   |     v      |                                                 |
+   | .------------------------------.                             |
+   | | Sinatra API Server           |                             |
+   | |                              |     .--------------------.  |   
+   | | Controller/Router logic      |<----| AUTH-KEY Archive:  |  |
+   | |                              |     | .../db/app.keys    |  |   
+   | |                              |     .--------------------.  |   
+   | +------------------------------+                             |
+   | | ActiveRecord ORM             |                             |   
+   | .---+--------------------------.                             |
+   |     |                                                        |
+   |     |   .-------------------------------------------------.  |
+   |     +---| PostgreSQL DB 1 (default/base) with tables:     |  |
+   |     |   |                                                 |  | 
+   |     |   | .------. .------. .--------.                    |  | 
+   |     |   | | Exam | | User | | Course |                    |  | 
+   |     |   | .------. .------. .--------.                    |  | 
+   |     |   .-------------------------------------------------.  |
+   |     |   .-------------------------------------------------.  |
+   |     +---| PostgreSQL DB 2 (external/remote) with tables:  |  |
+   |         |                                                 |  | 
+   |         | .------.                                        |  | 
+   |         | | Note |                                        |  | 
+   |         | .------.                                        |  | 
+   |         .-------------------------------------------------.  |
+   .--------------------------------------------------------------.
+```
+
+
+Dev Tips:
 - I used [curl](http://curl.haxx.se/docs/httpscripting.html) as default command line tool for doing client-side tests.
-- I coded a simple web client tester [Web Client side API calls using jQuery AJAX](https://github.com/solyaris/sinatra-api-server-demo#web-client-side-api-calls-using-jquery-ajax) 
+- I supplied a simple web client test app [using jQuery AJAX](https://github.com/solyaris/sinatra-api-server-demo#web-client-side-api-calls-using-jquery-ajax) 
 
-- To automatically reload rack development server I enjoyed use of [shotgun](https://github.com/rtomayko/shotgun)
-- To browse activerecord models and doying queries, as I'm used with *rails console*, I used very useful [tux](https://github.com/cldwalker/tux) developement environment.
+To reproduce the Rails developer usual experience:  
+-  I enjoyed use of [shotgun](https://github.com/rtomayko/shotgun) to automatically reload rack development server.
+- I used very useful [tux](https://github.com/cldwalker/tux) developement environment to browse ActiveRecord models and doying queries, a la *rails console*.
 
 
 # Accessing relational DBs through Activerecord
 
+In this sample application, I want connect with two already living databases (let say you already have in production some *legacy* database and you want to access these data with an API server):
 
-In this sample application, I want connect with two already existent databases:
-
-The "default" db is the postgresql database *esamiAnatomia_development*, that contain three tables: 
-- *Exam* 
-- *User* 
-- *Course*
+I used a real case scenario (of my customer's database), where the *default* db is the postgreSQL database with name: `esamiAnatomia_development`, that contain three tables: 
+- `Exam` 
+- `User` 
+- `Course`
 
 The source code to connect the database is so simple as: 
 ```ruby
@@ -35,8 +84,8 @@ class Course < ActiveRecord::Base
 end
 ```
 
-I want to connect also to a second different postgresql database named *sar*, containing table: 
-- *Note*
+I want to connect also to a second different postgresql database named `sar`, containing table: 
+- `Note`
 
 Here below the table columns details: 
 
@@ -58,7 +107,7 @@ Indexes:
     "notes_pkey" PRIMARY KEY, btree (id)
 ```
 
-In that case, the Model is a class where I specify also some activerecord validations: 
+In that case, the Model is a class where I specify also some ActiveRecord validations: 
 
 ```ruby
 class Note < ActiveRecord::Base
@@ -82,7 +131,7 @@ end
     ```$ bundle```
 
 - Run the API server in a first terminal
-  - set environment variables defining DB URI:
+  - set environment variables defining DB URI for both database instances:
    
     ```
     $ export ESAMIANATOMIA_DB_URL=postgres://your-username:your-password@localhost/esamiAnatomia_development
@@ -138,7 +187,7 @@ json reply:
 
 The example here below show how to manage an Api-key (authorization token).
 
-List of all items of model *users*, passing an _invalid_ key (an UUID by example) 
+List of all items of model *users*, passing an _invalid_ key (an UUID, by example):
 
 ```
 $ curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
@@ -152,7 +201,7 @@ json reply:
 ```
 
 
-List of all items of model *users*, passing a _valid_ key (an UUID by example) 
+List of all items of model *users*, passing a _valid_ key (let say again an UUID):
 
 ```
 $ curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
@@ -214,7 +263,7 @@ Server: thin 1.6.0 codename Greek Yogurt
 }
 ```
 
-### CREATE of a new record in table *note* (with errors):
+### CREATE of a new record in table `note` (in case of validation errors):
 
 
 ```
@@ -234,7 +283,7 @@ json reply:
 ```
 
 
-### READ a record from table *note*:
+### READ a record from table `note`:
 
 ```
 $ curl -i http://localhost:9393/notes/1
@@ -252,7 +301,7 @@ json reply:
 }
 ```
 
-### UPDATE a record from table *note*:
+### UPDATE a record from table `note`:
 ```
 $ curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'      
 ```
@@ -271,12 +320,12 @@ json reply:
 
 ```
 
-### DELETE a record from table *note*:
+### DELETE a record from table `note`:
 ```
 $ curl -X DELETE http://localhost:9393/notes/1      
 ```
 
-### List all records from table *note*:
+### List all records from table `note`:
 ```
 $ curl http://localhost:9393/notes      
 ```
@@ -306,7 +355,7 @@ json reply:
 
 ## Pagination
 
-get first page (0), assuming a page contain 10 items, from model *Exam*
+Get first page (0), assuming a page contain 10 items, from model `Exam`:
 
 ```
 $ curl http://localhost:9393/exams/paginate/10/0
@@ -351,13 +400,13 @@ json reply:
 
 ## File Upload / Download
 
-Upload file *file.txt* and store the file in /public directory.
+Upload file `file.txt` and store the file in /public directory:
 
 ```
 $ curl --upload-file file.txt localhost:9393/upload/
 ```
 
-Download file *file.txt* stored in /public directory (/public/file.txt).
+Download file `file.txt` stored in /public directory (/public/file.txt):
 
 ```
 $ curl localhost:9393/download/file.txt
@@ -391,7 +440,7 @@ INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page:
 ## How to run sinatra server
 
 
-### Using *shotgun* in developement
+### Using Shotgun in developement
 
 
 run shotgun, basic:
@@ -518,10 +567,10 @@ true
 
 # Releases
 
-## v.0.1.1
+## v.0.1.2
 - comments translated in English, adding some explanations. Better explanantion in README, inserting screenshot of Web Client side API calls example using jQuery AJAX.
 
-# Todo
+# Discussion / Todo
 
 - JSON load/dump speed-up: substitute JSON Ruby standard implementation I used, instead using [MultiJson](https://github.com/intridea/multi_json) gem and super-fast [Oj](https://github.com/ohler55/oj) gem. BTW, I used this last approach in my project: [blomming_api](https://github.com/solyaris/blomming_api).
 
