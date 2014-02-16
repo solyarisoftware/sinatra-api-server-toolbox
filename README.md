@@ -163,13 +163,17 @@ json 'pretty printed' reply (is sinatra server is running in developement):
 
 ```json
 {
-  "message": "JSON API DEMO (ruby, sinatra, activerecord, postgresql) by: giorgio.robino@gmail.com"
-}```
+  "message": "JSON API DEMO (ruby, sinatra, activerecord, postgresql)"
+}
+```
 
 json 'minified' reply (is sinatra server is running in production):
 
 ```json
-{"message":"JSON API DEMO (ruby, sinatra, activerecord, postgresql) by: giorgio.robino@gmail.com"}```
+{
+  "message":"JSON API DEMO (ruby, sinatra, activerecord, postgresql)"
+}
+```
 
 
 ## Passing parameters in request body
