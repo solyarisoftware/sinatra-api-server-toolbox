@@ -62,7 +62,7 @@ To reproduce the Rails developer usual experience:
 - I used very useful [tux](https://github.com/cldwalker/tux) developement environment to browse ActiveRecord models and doying queries, a la *rails console*.
 
 
-# Accessing relational DBs through Activerecord
+# Activerecord ORM
 
 In this sample application, I want connect with two already living databases (let say you already have in production some *legacy* database and you want to access these data with an API server):
 
@@ -133,9 +133,11 @@ end
 - Run the API server in a first terminal
   - set environment variables defining DB URI for both database instances:
    
-    ```
-    $ export ESAMIANATOMIA_DB_URL=postgres://your-username:your-password@localhost/esamiAnatomia_development
-    $ export SAR_DB_URL=postgres://your-username:your-password@localhost/sar
+    ```bash
+    export ESAMIANATOMIA_DB_URL=\
+    postgres://your-username:your-password@localhost/esamiAnatomia_development
+    export SAR_DB_URL=\
+    postgres://your-username:your-password@localhost/sar
     ```
 
   - run the API SERVER daemon, by example in development env, with command: 
