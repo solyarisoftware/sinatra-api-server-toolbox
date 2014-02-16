@@ -91,6 +91,8 @@ Here below the table columns details:
 
 ```bash
 sudo -u db_username psql sar
+```
+```
 psql (9.1.9)
 Type "help" for help.
 
@@ -180,7 +182,7 @@ curl -X POST localhost:9393/login -d '{ "username":"admin", "password":"admin" }
 
 json reply:
 
-```
+```json
 {
   "message": "OK: login passed"
 }
@@ -198,7 +200,7 @@ curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxx
 ```
 json reply:
 
-```
+```json
 {
   "message": "sorry, you are not authorized."
 }
@@ -212,7 +214,7 @@ curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyy
 ```
 json reply:
 
-```
+```json
 [
   {
     "user": {
@@ -242,12 +244,13 @@ json reply:
 ### CREATE of a new record in table *note*:
 
 ```bash
-curl -i -X POST http://localhost:9393/notes -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
+curl -i -X POST http://localhost:9393/notes \
+-d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
 ```
 
 json reply:
 
-```
+```json
 
 HTTP/1.1 200 OK
 Content-Type: application/json;charset=utf-8
@@ -275,7 +278,7 @@ curl -X POST http://localhost:9393/notes -d '{ "title":"pr", "body":"" }'
 ```
 json reply:
 
-```
+```json
 {
   "title": [
     "is too short (minimum is 3 characters)"
@@ -293,7 +296,7 @@ json reply:
 curl -i http://localhost:9393/notes/1
 ```
 json reply:
-```
+```json
 {
   "note": {
     "body": "corpo del messaggio di prova!",
@@ -311,7 +314,7 @@ curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'
 ```
 
 json reply:
-```
+```json
 {
   "note": {
     "body": "corpo del messaggio di prova!",
@@ -334,7 +337,7 @@ curl -X DELETE http://localhost:9393/notes/1
 curl http://localhost:9393/notes      
 ```
 json reply:
-```
+```json
 [
   {
     "note": {
@@ -365,7 +368,7 @@ Get first page (0), assuming a page contain 10 items, from model `Exam`:
 curl http://localhost:9393/exams/paginate/10/0
 ```
 json reply:
-```
+```json
 [
   {
     "exam": {
@@ -451,8 +454,11 @@ run shotgun, basic:
 
 ```bash
 shotgun -o localhost 
+```
+```
 == Shotgun/Thin on http://localhost:9393/
 ```
+
 
 setting environment excipitly: 
 
@@ -466,8 +472,11 @@ specifying environment, host and port:
 
 ```bash
 ruby app.rb -o localhost -p 9393 -e production
+```
+```
 == Sinatra/1.4.3 has taken the stage on 9393 for production with backup from Thin
 ```
+
 
 using rackup:
 
