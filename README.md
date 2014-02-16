@@ -89,8 +89,8 @@ I want to connect also to a second different postgresql database named `sar`, co
 
 Here below the table columns details: 
 
-```
-$ sudo -u db_username psql sar
+```bash
+sudo -u db_username psql sar
 psql (9.1.9)
 Type "help" for help.
 
@@ -128,7 +128,9 @@ end
 
 - git clone the source code from github
 - install all gems specified in Gemfile, with command: 
-    ```$ bundle```
+    ```bash
+    bundle
+    ```
 
 - Run the API server in a first terminal
   - set environment variables defining DB URI for both database instances:
@@ -151,8 +153,8 @@ Here below I listed some examples of usage of client-side API calls, using `curl
 
 ## Simplest call
 
-```
-$ curl localhost:9393/
+```bash
+curl localhost:9393/
 ```
 
 json 'pretty printed' reply (is sinatra server is running in developement):
@@ -172,8 +174,8 @@ json 'minified' reply (is sinatra server is running in production):
 
 ## Passing parameters in request body
 
-```
-$ curl -X POST localhost:9393/login -d '{ "username":"admin", "password":"admin" }'
+```bash
+curl -X POST localhost:9393/login -d '{ "username":"admin", "password":"admin" }'
 ```
 
 json reply:
@@ -191,8 +193,8 @@ The example here below show how to manage an Api-key (authorization token).
 
 List of all items of model *users*, passing an _invalid_ key (an UUID, by example):
 
-```
-$ curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+```bash
+curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 json reply:
 
@@ -205,8 +207,8 @@ json reply:
 
 List of all items of model *users*, passing a _valid_ key (let say again an UUID):
 
-```
-$ curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+```bash
+curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
 ```
 json reply:
 
@@ -239,8 +241,8 @@ json reply:
 
 ### CREATE of a new record in table *note*:
 
-```
-$ curl -i -X POST http://localhost:9393/notes -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
+```bash
+curl -i -X POST http://localhost:9393/notes -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
 ```
 
 json reply:
@@ -287,8 +289,8 @@ json reply:
 
 ### READ a record from table `note`:
 
-```
-$ curl -i http://localhost:9393/notes/1
+```bash
+curl -i http://localhost:9393/notes/1
 ```
 json reply:
 ```
@@ -304,8 +306,8 @@ json reply:
 ```
 
 ### UPDATE a record from table `note`:
-```
-$ curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'      
+```bash
+curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'      
 ```
 
 json reply:
@@ -323,13 +325,13 @@ json reply:
 ```
 
 ### DELETE a record from table `note`:
-```
-$ curl -X DELETE http://localhost:9393/notes/1      
+```bash
+curl -X DELETE http://localhost:9393/notes/1      
 ```
 
 ### List all records from table `note`:
-```
-$ curl http://localhost:9393/notes      
+```bash
+curl http://localhost:9393/notes      
 ```
 json reply:
 ```
@@ -359,8 +361,8 @@ json reply:
 
 Get first page (0), assuming a page contain 10 items, from model `Exam`:
 
-```
-$ curl http://localhost:9393/exams/paginate/10/0
+```bash
+curl http://localhost:9393/exams/paginate/10/0
 ```
 json reply:
 ```
@@ -404,14 +406,14 @@ json reply:
 
 Upload file `file.txt` and store the file in /public directory:
 
-```
-$ curl --upload-file file.txt localhost:9393/upload/
+```bash
+curl --upload-file file.txt localhost:9393/upload/
 ```
 
 Download file `file.txt` stored in /public directory (/public/file.txt):
 
-```
-$ curl localhost:9393/download/file.txt
+```bash
+curl localhost:9393/download/file.txt
 ```
 
 ## Web Client side API calls using jQuery AJAX 
@@ -447,30 +449,30 @@ INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page:
 
 run shotgun, basic:
 
-```
-$ shotgun -o localhost 
+```bash
+shotgun -o localhost 
 == Shotgun/Thin on http://localhost:9393/
 ```
 
 setting environment excipitly: 
 
-```
-$ shotgun -o localhost -E development
+```bash
+shotgun -o localhost -E development
 ```
 
 ### run server in production
 
 specifying environment, host and port:
 
-```
-$ ruby app.rb -o localhost -p 9393 -e production
+```bash
+ruby app.rb -o localhost -p 9393 -e production
 == Sinatra/1.4.3 has taken the stage on 9393 for production with backup from Thin
 ```
 
 using rackup:
 
-```
-$ rackup -o localhost -p 9393 -E production
+```bash
+rackup -o localhost -p 9393 -E production
 ```
 ---
 
@@ -485,8 +487,8 @@ allow to show (activerecord returned) record data set in pretty print data table
 
 Here below some examples using tux interactive console
 
-```
-$ tux
+```bash
+tux
 
 Loading development environment (Rack 1.2)
 
