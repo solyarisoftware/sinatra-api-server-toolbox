@@ -1,4 +1,5 @@
-require 'json'
+# encoding: utf-8
+require 'multi_json'
 require 'sinatra'
 require 'sinatra/activerecord'
 
@@ -48,8 +49,10 @@ before do
   content_type :json 
 end  
 
+# export RACK_ENV=development
+#set :environment, :development # :test, :production
+
 =begin
-set :environment, :production
 
 # http://stackoverflow.com/questions/8772641/how-to-define-global-error-handler-for-json-in-sinatra
 error do
@@ -57,7 +60,7 @@ error do
   status 400 # or whatever
 
   e = env['sinatra.error']
-  {:result => 'error', :message => e.message}.to_json
+  {:result => 'error', :message => e.message}.json
 end
 =end
 
@@ -78,20 +81,20 @@ helpers do
   ALLOWED_KEYS = open("#{Sinatra::Application.settings.root}/db/app.keys").map { |line| line.split(' ')[0] }
 
   #
-  # JSON dump: 
-  # in developement environment: pretty print JSON, 
-  # otherwise: minified JSON
-  # TODO: use MultiJson (and Oj under the hood) to speed-up JSON dump/load 
+  # json  
+  # in developement environment: dump pretty print JSON, 
+  # in others environments: dump "minified" JSON
   #
-  def to_json( dataset )
+  def json( dataset )
     if !dataset #.empty? 
       return no_data!
     end  
 
     if settings.development?
-      JSON.pretty_generate(JSON.parse(dataset.to_json)) + "\n"  
+      #MultiJson.dump(dataset, :pretty => true) + "\n"
+      JSON.pretty_generate(JSON.load(dataset.to_json)) + "\n"  
     else
-      dataset.to_json
+      MultiJson.dump dataset
     end
   end
 
@@ -108,12 +111,12 @@ helpers do
 
   def not_authorized!
       status 401
-      to_json ( { :message => "sorry, you are not authorized." } )    
+      json :message => "sorry, you are not authorized."
   end
 
   def no_data!
     status 204
-    #to_json ({ :message => "no data" })
+    #json :message => "no data"
   end
 
 end
@@ -127,7 +130,7 @@ get "/" do
   STDERR.puts "request body:"
   STDERR.puts request.body.read.inspect
 =end
-  to_json ( { :message => "JSON API DEMO (ruby, sinatra, ActiveRecord, postgresql) by: giorgio.robino@gmail.com"} )
+  json :message => "Sinatra API Server Toolbox, by giorgio.robino@gmail.com"
 end
 
 
@@ -135,14 +138,14 @@ end
 # CRUD verbs on Note model
 #
 get "/notes" do
-  to_json Note.all
+  json Note.all
 end
 
 #
 # READ
 #
 get "/notes/:id" do
-  to_json Note.find(params[:id])
+  json Note.find params[:id]
 end
 
 #
@@ -154,14 +157,14 @@ end
 post "/notes" do
 
   # get parameters form request body in JSON format  
-  new_note = JSON.parse(request.body.read)
+  new_note = MultiJson.load(request.body.read)
 
   @note = Note.new( new_note ) #params[:note]
   if @note.save
-    to_json @note
+    json @note
   else
     # return errors if errors present (validations fail), 
-    to_json @note.errors.messages
+    json @note.errors.messages
   end
 end
 
@@ -172,17 +175,17 @@ end
 # curl -i -X PUT http://localhost:9393/notes/9 -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
 #
 put "/notes/:id" do
-  @note = Note.find_by_id(params[:id])
+  @note = Note.find_by_id params[:id]
  
   if !@note
     no_data!
   else
-    new_note = JSON.parse(request.body.read)
+    new_note = MultiJson.load request.body.read
 
     if @note.update_attributes(new_note)
-      to_json @note
+      json @note
     else
-      to_json @note.errors.messages
+      json @note.errors.messages
     end
   end
 end
@@ -191,7 +194,7 @@ end
 # DELETE
 #
 delete "/notes/:id" do
-    @note = Note.find_by_id(params[:id])
+    @note = Note.find_by_id params[:id]
  
   if !@note
     no_data!
@@ -203,12 +206,12 @@ end
 
 
 get "/courses" do
-  to_json Course.all
+  json Course.all
 end
 
 # WARN: BAD! in case of a table with a lot of rows!
 get "/exams" do
-  to_json Exam.all
+  json Exam.all
 end
 
 #
@@ -221,7 +224,7 @@ end
 get "/users" do
   # return data if passed API_KEY is authorized 
   if authorized?
-    to_json User.all
+    json User.all
   else
     not_authorized!
   end  
@@ -236,24 +239,24 @@ end
 # Exam.limit(10).offset(2*10)
 #
 get "/exams/paginate/:limit/:offset" do
-  to_json Exam.limit(params[:limit]).offset(params[:offset])
+  json Exam.limit(params[:limit]).offset(params[:offset])
 end
 
 get "/exams/last_twenty" do
-  to_json Exam.select([:id, :cognomenome, :matricola, :updated_at]).order("updated_at DESC").limit(20)
+  json Exam.select([:id, :cognomenome, :matricola, :updated_at]).order("updated_at DESC").limit(20)
 end
 
 # as above, but using plain SQL instead of ActiveRecords ORM DSL...
 get "/exams/last_twenty_by_sql" do
-  to_json Exam.find_by_sql('SELECT id, cognomenome, matricola, updated_at FROM exams ORDER BY updated_at DESC LIMIT 20')
+  json Exam.find_by_sql('SELECT id, cognomenome, matricola, updated_at FROM exams ORDER BY updated_at DESC LIMIT 20')
  end
 
 get "/exams/last" do
-  to_json Exam.last
+  json Exam.last
 end
 
 get "/exams-count" do
-  to_json ({ :message => Exam.count })
+  json :message => Exam.count
 end
 
 
@@ -262,10 +265,10 @@ end
 # this endpoint must stay HERE, AFTER all above...
 #
 get "/exams/:id" do
-  to_json Exam.find_by_id(params[:id])
+  json Exam.find_by_id params[:id]
 =begin
   if exam
-    to_json exam
+    json exam
   else
     no_data!
   end  
@@ -280,13 +283,13 @@ end
 # curl -X POST http://localhost:9393/login -d '{ "username":"user", "password":"admin" }' -H 'Content-Type: application/json'
 #
 post "/login" do
-  # params_json = JSON.parse(request.body.read) # jdata = params[:data]
-  login = JSON.parse(request.body.read)
+  # params_json = MultiMultiJson.load(request.body.read) # jdata = params[:data]
+  login = MultiJson.load request.body.read 
 
   if (login["username"] == "admin") and (login["password"] == "admin")
-    to_json ( { :message => "OK: login passed" } )
+    json :message => "OK: login passed"
   else
-    to_json ( { :message => "ERROR: invalid username or password" } )
+    json :message => "ERROR: invalid username or password"
   end 
 
   # echo: return same parameters of POST...
@@ -320,14 +323,14 @@ get '/download/:filename' do
     attachment 
     send_file file #, :disposition => :attachment
   else
-    to_json ( { :message => "ERROR: file not found" } )
+    json :message => "ERROR: file not found"
   end  
 end
 
 not_found do
-  to_json ( { :message => 'This is nowhere to be found.' } )
+  json :message => 'This is nowhere to be found.'
 end
 
 error do
-  to_json ( { :message => 'Sorry there was a nasty error - ' + env['sinatra.error'].name } )
+  json :message => 'Sorry there was a nasty error - ' + env['sinatra.error'].name
 end

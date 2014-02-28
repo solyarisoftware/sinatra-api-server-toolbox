@@ -1,4 +1,4 @@
-# Sinatra API Server Demo 
+# Sinatra API Server Toolbox 
 
 Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), returning data in JSON format.
 
@@ -8,13 +8,13 @@ Let consider this requirements:
 - To access to some tables from TWO different ALREADY EXISTING (postgreSQL) databases, 
 - To access them using activerecord ORM, so I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord ORM.
 
-As proof of concept I supplied some Sinatra endpoints to manage a pseudo-REST idiom, a very-very simple authorization key example, some data query and routing, files upload/download. Always returning JSON. 
+As proof of concept I supplied some Sinatra endpoints in a pseudo-REST way, a very-very simple authorization key management (just a toy!), some data query and routing, files upload/download. I used Oj fast JSON implementation! 
 
 
 ```
    .----------------------------------.
    |                                  |
-   | API Client (curl/webclient/etc.) |
+   | API Client ($ curl/webclient/etc.) |
    |                                  |
    .----------------------------------.                             
          |      ^
@@ -53,8 +53,8 @@ As proof of concept I supplied some Sinatra endpoints to manage a pseudo-REST id
 ```
 
 
-Dev Tips:
-- I used [curl](http://curl.haxx.se/docs/httpscripting.html) as default command line tool for doing client-side tests.
+Developement Tips & Tools:
+- I used [$ curl](http://$ curl.haxx.se/docs/httpscripting.html) as default command line tool for doing client-side tests.
 - I supplied a simple web client test app [using jQuery AJAX](https://github.com/solyaris/sinatra-api-server-demo#web-client-side-api-calls-using-jquery-ajax) 
 
 To reproduce the Rails developer usual experience:  
@@ -146,17 +146,17 @@ end
 
   - run the API SERVER daemon, by example in development env, with command: 
     ```shotgun -o localhost```
-- Run the API CLIENT calls, using `curl` in a second terminal (below some examples)
+- Run the API CLIENT calls, using `$ curl` in a second terminal (below some examples)
 - you can monitor/debug ActiveRecord queries running `tux` in a third terminal   
 
 # Client side API call examples
 
-Here below I listed some examples of usage of client-side API calls, using `curl` command line utility. 
+Here below I listed some examples of usage of client-side API calls, using `$ curl` command line utility. 
 
 ## Simplest call
 
 ```bash
-curl localhost:9393/
+$ curl localhost:9393/
 ```
 
 json 'pretty printed' reply (is sinatra server is running in developement):
@@ -179,7 +179,7 @@ json 'minified' reply (is sinatra server is running in production):
 ## Passing parameters in request body
 
 ```bash
-curl -X POST localhost:9393/login -d '{ "username":"admin", "password":"admin" }'
+$ curl -X POST localhost:9393/login -d '{ "username":"admin", "password":"admin" }'
 ```
 
 json reply:
@@ -198,7 +198,7 @@ The example here below show how to manage an Api-key (authorization token).
 List of all items of model *users*, passing an _invalid_ key (an UUID, by example):
 
 ```bash
-curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+$ curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
 json reply:
 
@@ -212,7 +212,7 @@ json reply:
 List of all items of model *users*, passing a _valid_ key (let say again an UUID):
 
 ```bash
-curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
+$ curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
 ```
 json reply:
 
@@ -246,7 +246,7 @@ json reply:
 ### CREATE of a new record in table *note*:
 
 ```bash
-curl -X POST http://localhost:9393/notes \
+$ curl -X POST http://localhost:9393/notes \
 -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
 ```
 
@@ -268,7 +268,7 @@ json reply:
 
 
 ```
-curl -X POST http://localhost:9393/notes -d '{ "title":"pr", "body":"" }'
+$ curl -X POST http://localhost:9393/notes -d '{ "title":"pr", "body":"" }'
 ```
 json reply (in case of validation errors):
 
@@ -287,7 +287,7 @@ json reply (in case of validation errors):
 ### READ a record from table *note*:
 
 ```bash
-curl -i http://localhost:9393/notes/1
+$ curl -i http://localhost:9393/notes/1
 ```
 json reply:
 ```json
@@ -304,7 +304,7 @@ json reply:
 
 ### UPDATE a record from table *note*:
 ```bash
-curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'      
+$ curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'      
 ```
 
 json reply:
@@ -323,12 +323,12 @@ json reply:
 
 ### DELETE a record from table *note*:
 ```bash
-curl -X DELETE http://localhost:9393/notes/1      
+$ curl -X DELETE http://localhost:9393/notes/1      
 ```
 
 ### List all records from table `note`:
 ```bash
-curl http://localhost:9393/notes      
+$ curl http://localhost:9393/notes      
 ```
 json reply:
 ```json
@@ -359,7 +359,7 @@ json reply:
 Get first page (0), assuming a page contain 10 items, from model `Exam`:
 
 ```bash
-curl http://localhost:9393/exams/paginate/10/0
+$ curl http://localhost:9393/exams/paginate/10/0
 ```
 json reply:
 ```json
@@ -399,23 +399,60 @@ json reply:
 ]
 ```
 
+
+## HTTP Compression
+
+If you're using a Rack-based web framework (as Sinatra) you can very easily slim down your responses by compressing them. To achieve this you just have to use the Rack::Deflater middleware (see `config.ru`). Now any client that sets the `Accept-Encoding: gzip,deflate` header will benefit from smaller responses.
+
+Let consider the GET /exams where the resource JSON representation amount 1650K bytes:
+
+```bash
+$ time $ curl http://192.168.1.33:9393/exams --output exams.json
+```
+output show an elapsed time of 4.116 seconds:
+```
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 1650k  100 1650k    0     0   427k      0  0:00:03  0:00:03 --:--:--  427k
+
+real    0m4.116s
+```
+
+If the client sets the `Accept-Encoding: gzip,deflate` header, so the rack server gzip slim down to 198K bytes:
+
+
+```bash
+$ time $ curl http://192.168.1.33:9393/exams --http1.0 -H "Accept-Encoding: gzip,deflate"  --output exams.json.gz
+```
+output show an elapsed time of 4.034 seconds:
+```
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  198k    0  198k    0     0  53339      0 --:--:--  0:00:03 --:--:-- 53373
+
+real    0m4.034s
+```
+
+Note: in that case (client and server in localhost) times are similar. Note that data compression (by server) and data decompression (by client) have a cpu cost and there is a time overhead (in comparison to the uncompressed way), But the network payload may decrease so much in case of compression! So the HTTP compression solution could be great in case of low badwith network connections.
+
+
 ## File Upload / Download
 
 Upload file `file.txt` and store the file in /public directory:
 
 ```bash
-curl --upload-file file.txt localhost:9393/upload/
+$ curl --upload-file file.txt localhost:9393/upload/
 ```
 
 Download file `file.txt` stored in /public directory (/public/file.txt):
 
 ```bash
-curl localhost:9393/download/file.txt
+$ curl localhost:9393/download/file.txt
 ```
 
 ## Web Client side API calls using jQuery AJAX 
 
-I wrote a web demo page: [/public/webclient.html] (https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) 
+I wrote a web demo page: [/public/webclient.html](https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) 
 The page allow to test some examples of API methods usage, using jQuery AJAX calls like this one: 
 
 ```javascript
@@ -447,7 +484,7 @@ INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page:
 run shotgun, basic:
 
 ```bash
-shotgun -o localhost 
+$ shotgun -o localhost 
 ```
 ```== Shotgun/Thin on http://localhost:9393/```
 
@@ -455,24 +492,17 @@ shotgun -o localhost
 setting environment excipitly: 
 
 ```bash
-shotgun -o localhost -E development
+$ shotgun -o localhost -E development
 ```
 
 ### run server in production
 
-specifying environment, host and port:
+specifying environment, host and port, using rackup:
 
 ```bash
-ruby app.rb -o localhost -p 9393 -e production
+$ rackup -o localhost -p 9393 -E production
 ```
-```== Sinatra/1.4.3 has taken the stage on 9393 for production with backup from Thin```
 
-
-using rackup:
-
-```bash
-rackup -o localhost -p 9393 -E production
-```
 ---
 
 ## *tux* as an equivalent of *rails console* 
@@ -488,7 +518,7 @@ Here below some examples using tux interactive console
 
 Run the tux console from command prompt:
 ```bash
-tux
+$ tux
 ```
 
 Using tux interactive console with Hirb:
@@ -575,13 +605,15 @@ true
 
 # Releases
 
-## v.0.1.2
-- comments translated in English, adding some explanations. Better explanantion in README, inserting screenshot of Web Client side API calls example using jQuery AJAX.
+## v.0.2.0
+- HTTP Compression: I added the trick using Rack::Deflate feature. I supplied cleient calls examples. 
+- JSON load/dump speed-up: I substituted JSON Ruby standard implementation with [MultiJson](https://github.com/intridea/multi_json) gem and super-fast [Oj](https://github.com/ohler55/oj) gem.
+- Comments translated in English. Better explanantion in README, inserted an image screenshot of Web Client side API calls example using jQuery AJAX.
 
-# Discussion / Todo
 
-- JSON load/dump speed-up: substitute JSON Ruby standard implementation I used, instead using [MultiJson](https://github.com/intridea/multi_json) gem and super-fast [Oj](https://github.com/ohler55/oj) gem. BTW, I used this last approach in my project: [blomming_api](https://github.com/solyaris/blomming_api).
+# Todo
 
+- Improve authentication key db management. 
 - Insert an example of managing large amount of data with a super-fast in-memory NOSQL database as [Redis](http://redis.io/)!
 
 - better manage HTTP return codes
@@ -590,7 +622,8 @@ true
 
 
 # Thanks
-- Iain Barnett ( https://github.com/yb66 ) for his answer to my stackoverflow.com [accessing-preexistent-database-via-activerecord-about-validations] (http://stackoverflow.com/questions/19402318/sinatra-api-server-accessing-preexistent-database-via-activerecord-about-valida/19461374?noredirect=1#19461374)
+- [Iain Barnett](https://github.com/yb66) for his answer to my stackoverflow.com [accessing-preexistent-database-via-activerecord-about-validations](http://stackoverflow.com/questions/19402318/sinatra-api-server-accessing-preexistent-database-via-activerecord-about-valida/19461374?noredirect=1#19461374)
+- [Peter Ohler](https://github.com/ohler55), for his superb gem Oj (fast JSON parser used in this project behind MultiJson).
 
 
 # License (MIT)
