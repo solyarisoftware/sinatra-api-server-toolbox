@@ -14,7 +14,7 @@ As proof of concept I supplied some Sinatra endpoints in a pseudo-REST way, a ve
 ```
    .----------------------------------.
    |                                  |
-   | API Client ($ curl/webclient/etc.) |
+   | API Client (curl/webclient/etc.) |
    |                                  |
    .----------------------------------.                             
          |      ^
@@ -407,7 +407,7 @@ If you're using a Rack-based web framework (as Sinatra) you can very easily slim
 Let consider the GET /exams where the resource JSON representation amount 1650K bytes:
 
 ```bash
-$ time $ curl http://192.168.1.33:9393/exams --output exams.json
+$ time curl http://192.168.1.33:9393/exams --output exams.json
 ```
 output show an elapsed time of 4.116 seconds:
 ```
@@ -422,7 +422,7 @@ If the client sets the `Accept-Encoding: gzip,deflate` header, so the rack serve
 
 
 ```bash
-$ time $ curl http://192.168.1.33:9393/exams --http1.0 -H "Accept-Encoding: gzip,deflate"  --output exams.json.gz
+$ time curl http://192.168.1.33:9393/exams --http1.0 -H "Accept-Encoding: gzip,deflate"  --output exams.json.gz
 ```
 output show an elapsed time of 4.034 seconds:
 ```
@@ -471,7 +471,7 @@ $('#notes_post').click(function () {
 ```
 
 INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page:
-![screenshot](https://raw2.github.com/solyaris/sinatra-api-server-demo/master/public/webclient.html.shot.png)
+![screenshot](https://raw2.github.com/solyaris/sinatra-api-server-toolbox/master/public/webclient.html.shot.png)
 
 ------
 
@@ -622,7 +622,7 @@ true
 
 
 # Thanks
-- [Iain Barnett](https://github.com/yb66) for his answer to my stackoverflow.com [accessing-preexistent-database-via-activerecord-about-validations](http://stackoverflow.com/questions/19402318/sinatra-api-server-accessing-preexistent-database-via-activerecord-about-valida/19461374?noredirect=1#19461374)
+- [Iain Barnett](https://github.com/yb66) for his [answer](http://stackoverflow.com/questions/19402318/sinatra-api-server-accessing-preexistent-database-via-activerecord-about-valida/19461374?noredirect=1#19461374) to my stackoverflow.com question.
 - [Peter Ohler](https://github.com/ohler55), for his superb gem Oj (fast JSON parser used in this project behind MultiJson).
 
 
