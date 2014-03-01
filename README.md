@@ -1,12 +1,12 @@
 # Sinatra API Server Toolbox 
 
-Realize a simple API server demo using [sinatra](http://www.sinatrarb.com/), returning data in JSON format.
+I'ts a super-simple API server demo using [sinatra](http://www.sinatrarb.com/).
 
 Let consider this requirements: 
 
-- To publish some API endpoint to share data already stored in different databases. 
-- To access to some tables from TWO different ALREADY EXISTING (postgreSQL) databases, 
-- To access them using activerecord ORM, so I used [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord ORM.
+- Realize a fast API server, publishing some API endpoints, returning data in JSON format.
+- Resources are data already stored in multiple RDBMS database tables, by example from TWO different ALREADY EXISTING (postgreSQL) databases. 
+- Access data using activerecord ORM, using [sinatra-activerecord gem](https://github.com/janko-m/sinatra-activerecord) that allow to interact with DBs through activerecord ORM.
 
 As proof of concept I supplied some Sinatra endpoints in a pseudo-REST way, a very-very simple authorization key management (just a toy!), some data query and routing, files upload/download. I used Oj fast JSON implementation! 
 
@@ -54,19 +54,20 @@ As proof of concept I supplied some Sinatra endpoints in a pseudo-REST way, a ve
 
 
 Developement Tips & Tools:
-- I used [$ curl](http://$ curl.haxx.se/docs/httpscripting.html) as default command line tool for doing client-side tests.
-- I supplied a simple web client test app [using jQuery AJAX](https://github.com/solyaris/sinatra-api-server-demo#web-client-side-api-calls-using-jquery-ajax) 
+- Command line Client tests: I used [curl](http://$ curl.haxx.se/docs/httpscripting.html) as default command line tool for client-side calls examples.
+- Web client tests: I supplied a simple front-end web page using [using jQuery AJAX](https://github.com/solyaris/sinatra-api-server-demo#web-client-side-api-calls-using-jquery-ajax). 
 
 To reproduce the Rails developer usual experience:  
--  I enjoyed use of [shotgun](https://github.com/rtomayko/shotgun) to automatically reload rack development server.
-- I used very useful [tux](https://github.com/cldwalker/tux) developement environment to browse ActiveRecord models and doying queries, a la *rails console*. Last but not least I find useful [Hirb](https://github.com/cldwalker/hirb) gem, to display record data set in pretty print data tables.
+-  I enjoyed use of [shotgun](https://github.com/rtomayko/shotgun) to automatically reload rack development server (you can so edit source code on the fly, without restart server)!
+- I enjoyed also very useful [tux](https://github.com/cldwalker/tux) developement environment, a sortt of a la *rails console* substitute, I mainly used to browse ActiveRecord models and doying queries. 
+- I display record data set in pretty print data tables using [Hirb](https://github.com/cldwalker/hirb) gem.
 
 
 # Using ActiveRecord ORM
 
-In this sample application, I want connect with two already living databases (let say you already have in production some *legacy* database and you want to access these data with an API server):
+In this demo application, I want connect with two already living databases (It's the case when you already have in production some *legacy* database and you want to access these data with an API server):
 
-I used a real case scenario (of my customer's database), where the *default* db is the postgreSQL database with name: `esamiAnatomia_development`, that contain three tables: 
+As prrof of concept, I used a real case scenario, where I have a *default/primary* postgreSQL database with name: `esamiAnatomia_development`, that contain three tables: 
 - `Exam` 
 - `User` 
 - `Course`
@@ -84,7 +85,7 @@ class Course < ActiveRecord::Base
 end
 ```
 
-I want to connect also to a second different postgreSQL database named `sar`, containing table: 
+Now, let say I want sinatra server be able to connect also to a second different postgreSQL database named `sar`, containing the table: 
 - `Note`
 
 Here below the table columns details: 
@@ -131,22 +132,22 @@ end
 - git clone the source code from github
 - install all gems specified in Gemfile, with command: 
     ```bash
-    bundle
+    $ bundle
     ```
 
 - Run the API server in a first terminal
   - set environment variables defining DB URI for both database instances:
    
     ```bash
-    export ESAMIANATOMIA_DB_URL=\
+    $ export ESAMIANATOMIA_DB_URL=\
     postgres://your-username:your-password@localhost/esamiAnatomia_development
-    export SAR_DB_URL=\
+    $ export SAR_DB_URL=\
     postgres://your-username:your-password@localhost/sar
     ```
 
   - run the API SERVER daemon, by example in development env, with command: 
-    ```shotgun -o localhost```
-- Run the API CLIENT calls, using `$ curl` in a second terminal (below some examples)
+    ```$ shotgun -o localhost```
+- Run the API CLIENT calls, using `curl` in a second terminal (below some examples)
 - you can monitor/debug ActiveRecord queries running `tux` in a third terminal   
 
 # Client side API call examples
@@ -159,20 +160,18 @@ Here below I listed some examples of usage of client-side API calls, using `$ cu
 $ curl localhost:9393/
 ```
 
-json 'pretty printed' reply (is sinatra server is running in developement):
+JSON 'pretty printed' reply (is sinatra server is running in developement):
 
 ```json
 {
-  "message": "JSON API DEMO (ruby, sinatra, ActiveRecord, postgreSQL)"
+  "message": "Sinatra API Server Toolbox"
 }
 ```
 
-json 'minified' reply (is sinatra server is running in production):
+JSON 'minified' reply (is sinatra server is running in production):
 
 ```json
-{
-  "message":"JSON API DEMO (ruby, sinatra, ActiveRecord, postgreSQL)"
-}
+{"message":"Sinatra API Server Toolbox"}
 ```
 
 
@@ -182,7 +181,7 @@ json 'minified' reply (is sinatra server is running in production):
 $ curl -X POST localhost:9393/login -d '{ "username":"admin", "password":"admin" }'
 ```
 
-json reply:
+JSON reply:
 
 ```json
 {
@@ -200,7 +199,7 @@ List of all items of model *users*, passing an _invalid_ key (an UUID, by exampl
 ```bash
 $ curl -X GET http://localhost:9393/users -H "key: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 ```
-json reply:
+JSON reply:
 
 ```json
 {
@@ -214,14 +213,14 @@ List of all items of model *users*, passing a _valid_ key (let say again an UUID
 ```bash
 $ curl -X GET http://localhost:9393/users -H "key: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy"
 ```
-json reply:
+JSON reply:
 
 ```json
 [
   {
     "user": {
       "created_at": "2013-08-27T07:44:48+02:00",
-      "crypted_password": ..., 
+      "crypted_password": "...", 
       "login": "Franco Paperone",
       "role": "docente",
       ...
@@ -231,10 +230,10 @@ json reply:
   {
     "user": {
       "created_at": "2013-08-27T07:44:48+02:00",
-      "crypted_password": ...,
+      "crypted_password": "...",
       "login": "admin",
       "role": "admin",
-      .....
+      ...
       "updated_at": "2013-09-25T22:25:38+02:00"
     }
   }
@@ -250,7 +249,7 @@ $ curl -X POST http://localhost:9393/notes \
 -d '{ "title":"prova", "body":"corpo del messaggio di prova!" }'
 ```
 
-json reply:
+JSON reply:
 
 ```json
 {
@@ -270,7 +269,7 @@ json reply:
 ```
 $ curl -X POST http://localhost:9393/notes -d '{ "title":"pr", "body":"" }'
 ```
-json reply (in case of validation errors):
+JSON reply (in case of validation errors):
 
 ```json
 {
@@ -289,7 +288,7 @@ json reply (in case of validation errors):
 ```bash
 $ curl -i http://localhost:9393/notes/1
 ```
-json reply:
+JSON reply:
 ```json
 {
   "note": {
@@ -307,7 +306,7 @@ json reply:
 $ curl -X PUT http://localhost:9393/notes/1 -d '{ "title":"titolo modificato" }'      
 ```
 
-json reply:
+JSON reply:
 ```json
 {
   "note": {
@@ -330,7 +329,7 @@ $ curl -X DELETE http://localhost:9393/notes/1
 ```bash
 $ curl http://localhost:9393/notes      
 ```
-json reply:
+JSON reply:
 ```json
 [
   {
@@ -361,7 +360,7 @@ Get first page (0), assuming a page contain 10 items, from model `Exam`:
 ```bash
 $ curl http://localhost:9393/exams/paginate/10/0
 ```
-json reply:
+JSON reply:
 ```json
 [
   {
@@ -385,7 +384,6 @@ json reply:
     }
   },
   ...
-  ...
   {
     "exam": {
       "id": 10,
@@ -407,7 +405,8 @@ If you're using a Rack-based web framework (as Sinatra) you can very easily slim
 Let consider the GET /exams where the resource JSON representation amount 1650K bytes:
 
 ```bash
-$ time curl http://192.168.1.33:9393/exams --output exams.json
+$ time curl http://192.168.1.33:9393/exams \
+--output exams.json
 ```
 output show an elapsed time of 4.116 seconds:
 ```
@@ -422,7 +421,9 @@ If the client sets the `Accept-Encoding: gzip,deflate` header, so the rack serve
 
 
 ```bash
-$ time curl http://192.168.1.33:9393/exams --http1.0 -H "Accept-Encoding: gzip,deflate"  --output exams.json.gz
+$ time curl http://192.168.1.33:9393/exams \
+--http1.0 -H "Accept-Encoding: gzip,deflate" \
+--output exams.json.gz
 ```
 output show an elapsed time of 4.034 seconds:
 ```
@@ -433,7 +434,8 @@ output show an elapsed time of 4.034 seconds:
 real    0m4.034s
 ```
 
-Note: in that case (client and server in localhost) times are similar. Note that data compression (by server) and data decompression (by client) have a cpu cost and there is a time overhead (in comparison to the uncompressed way), But the network payload may decrease so much in case of compression! So the HTTP compression solution could be great in case of low badwith network connections.
+Note:
+in that case (client and server in localhost) times are similar. Note that data compression (by server) and data decompression (by client) have a cpu cost and there is a time overhead (in comparison to the uncompressed way), But the network payload may decrease so much in case of compression! So the HTTP compression solution could be great in case of low badwith network connections.
 
 
 ## File Upload / Download
@@ -450,10 +452,9 @@ Download file `file.txt` stored in /public directory (/public/file.txt):
 $ curl localhost:9393/download/file.txt
 ```
 
-## Web Client side API calls using jQuery AJAX 
+## Web-client API calls using jQuery AJAX 
 
-I wrote a web demo page: [/public/webclient.html](https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html) 
-The page allow to test some examples of API methods usage, using jQuery AJAX calls like this one: 
+Here a web demo page: [/public/webclient.html](https://github.com/solyaris/sinatra-api-server-demo/blob/master/public/webclient.html). The page allow to test some examples of API methods usage, using jQuery AJAX calls like this one: 
 
 ```javascript
 $('#notes_post').click(function () {
@@ -470,16 +471,14 @@ $('#notes_post').click(function () {
 
 ```
 
-INSTANT GRATIFICATION: here a screenshot of the "runned" webclient page:
+Here a screenshot of the "runned" webclient page:
 ![screenshot](https://raw2.github.com/solyaris/sinatra-api-server-toolbox/master/public/webclient.html.shot.png)
 
-------
 
 ## How to run sinatra server
 
 
 ### Using Shotgun in developement
-
 
 run shotgun, basic:
 
@@ -503,18 +502,16 @@ specifying environment, host and port, using rackup:
 $ rackup -o localhost -p 9393 -E production
 ```
 
----
 
-## *tux* as an equivalent of *rails console* 
+## Tux as *sinatra console* 
 
 `tux gem`
-act as *rails console* for a Sinatra application!
-Really useful to query database using ActiveRecord methods.
+act as *rails console* for a Sinatra application! Really useful to query database using ActiveRecord methods.
 
 `hirb gem` 
 allow to show (ActiveRecord returned) record data set in pretty print data tables.
 
-Here below some examples using tux interactive console
+Here below some examples using tux interactive console.
 
 Run the tux console from command prompt:
 ```bash
@@ -615,10 +612,9 @@ true
 
 - Improve authentication key db management. 
 - Insert an example of managing large amount of data with a super-fast in-memory NOSQL database as [Redis](http://redis.io/)!
-
-- better manage HTTP return codes
-- better manage error handling
-- exceptions handling lack at all.
+- Better manage HTTP return codes
+- Better manage error handling
+- Exceptions handling lack at all.
 
 
 # Thanks
