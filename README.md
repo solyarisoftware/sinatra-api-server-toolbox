@@ -472,7 +472,7 @@ $('#notes_post').click(function () {
 ```
 
 Here a screenshot of the "runned" webclient page:
-[screenshot](https://raw.githubusercontent.com/solyaris/sinatra-api-server-toolbox/master/public/webclient.html.shot.png)
+![screenshot](https://raw.githubusercontent.com/solyaris/sinatra-api-server-toolbox/master/public/webclient.html.shot.png)
 
 
 ## How to run sinatra server
